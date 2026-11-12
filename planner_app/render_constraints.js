@@ -1,0 +1,8 @@
+function renderConstraints(){
+ $('constraint-rows').innerHTML=(state.constraints||[]).map((c,i)=>`<tr data-constraint="${i}"><td><select data-constraint-key="kind">${[['airport','空港運用時間'],['contractor','委託先対応時間'],['other','その他']].map(([v,n])=>`<option value="${v}" ${c.kind===v?'selected':''}>${n}</option>`).join('')}</select></td><td><select data-constraint-key="airport">${airportOptions(c.airport)}</select></td><td><input type="time" data-constraint-key="start" value="${esc(c.start)}"></td><td><input type="time" data-constraint-key="end" value="${esc(c.end)}"></td><td><input data-constraint-key="name" value="${esc(c.name||'')}" maxlength="80" aria-label="名称・メモ"></td><td><button data-constraint-delete="${i}">削除</button></td></tr>`).join('');
+}
+const renderBeforeConstraints=render;render=function(){renderBeforeConstraints();renderConstraints();};
+$('constraint-add').onclick=()=>{state.constraints=state.constraints||[];state.constraints.push({kind:'airport',airport:'KIJ',start:'07:00',end:'22:00',name:''});commit();};
+$('constraint-rows').onchange=e=>{const key=e.target.dataset.constraintKey;if(!key)return;const i=Number(e.target.closest('[data-constraint]').dataset.constraint),c=state.constraints?.[i];if(!c)return;const value=e.target.value;if(['start','end'].includes(key)&&!/^([01]\d|2[0-3]):[0-5]\d$/.test(value)){renderConstraints();toast('時刻を入力してください。');return;}c[key]=value;commit();};
+$('constraint-rows').onclick=e=>{const b=e.target.closest('[data-constraint-delete]');if(!b)return;state.constraints.splice(Number(b.dataset.constraintDelete),1);commit();};
+renderConstraints();

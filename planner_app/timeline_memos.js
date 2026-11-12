@@ -1,0 +1,6 @@
+// Notes are independent of the flight template and applied schedule records.
+let timelineMemos={};try{const raw=JSON.parse(localStorage.getItem('toki-timeline-memos-v1')||'{}');if(raw&&typeof raw==='object'&&!Array.isArray(raw))timelineMemos=raw;}catch(e){}
+function timelineMemoKey(){return Toki.charterMode?(Toki.activeCharterGroupId?'charter-code:'+Toki.activeCharterGroupId:'charter:'+date):'regular:'+(selectedPlan()?.id||'draft');}
+function renderTimelineMemo(){$('timeline-page-label').textContent=Toki.charterMode?'チャーター':'定期便';$('timeline-page-label').classList.toggle('charter-page-label',!!Toki.charterMode);const group=typeof activeCharterGroup==='function'?activeCharterGroup():null;const value=timelineMemos[timelineMemoKey()]??(Toki.charterMode?(timelineMemos['charter:'+date]??timelineMemos['charter:'+group?.day]):undefined);$('timeline-memo').value=typeof value==='string'?value:'';}
+$('timeline-memo').oninput=()=>{const key=timelineMemoKey();timelineMemos[key]=$('timeline-memo').value;try{localStorage.setItem('toki-timeline-memos-v1',JSON.stringify(timelineMemos));}catch(e){toast('メモを保存できませんでした。');}};
+const renderBeforeTimelineMemo=render;render=function(){renderBeforeTimelineMemo();renderTimelineMemo();};renderTimelineMemo();
