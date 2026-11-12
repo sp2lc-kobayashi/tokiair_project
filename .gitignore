@@ -1,7 +1,0 @@
-﻿node_modules/
-outputs/
-store/
-work/toki-planner/qa/store/
-.env
-*.log
-.DS_Store
